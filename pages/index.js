@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { ConnectBtn } from "../components/custombutton";
 import Dashboard from "../components/dashboard";
 import { useRef } from "react";
+import Marquee from "react-fast-marquee";
 import { useRouter } from "next/router";
 import {
   Flex,
@@ -167,7 +168,7 @@ export default function Home() {
         "Content-Type": "image/*",
       },
 
-      body: `${link}`,
+      body: `{"chain":"mantle","name":"AI MINT","description":\"Prompt: ${desc}\","image":\"${link}\","mint_to_address":"${address}"}`,
     };
 
     await fetch("https://api.nft.storage/upload", postOptions)
@@ -211,6 +212,19 @@ export default function Home() {
         align={"center"}
         flexDir={"column"}
       >
+        <Flex bg={"black"} color={"white"} width={"100%"} userSelect="none">
+          <Flex paddingTop={"10px"} paddingBottom={"10px"}>
+            <Text>
+              <Marquee gradientColor={"[0, 0, 0]"}>
+                Mantle Testnet Version Mantle Testnet Version Mantle Testnet
+                Version Mantle Testnet Version Mantle Testnet Version Mantle
+                Testnet Version Mantle Testnet Version Mantle Testnet Version
+                Mantle Testnet Version Mantle Testnet Version Mantle Testnet
+                Version Mantle Testnet Version
+              </Marquee>
+            </Text>
+          </Flex>
+        </Flex>
         <Flex gap={{ base: "184px", md: "776px" }} marginTop={"30px"}>
           <Flex gap={"12px"} align={"center"} height={"26px"}>
             <Image src={"aimint_logo.svg"} height={"24px"} width={"24px"} />
@@ -336,7 +350,7 @@ export default function Home() {
                   _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
                   _active={{ background: "" }}
                 >
-                  {!minting ? <Text> Mint this art</Text> : <Spinner />}
+                  {!minting ? <Text> Deploy on IPFS </Text> : <Spinner />}
                 </Button>
               )}
             </Flex>
@@ -423,7 +437,7 @@ export default function Home() {
               <Text fontStyle={"italic"} fontSize={"14px"}>
                 we let you type your creativity and generate it as an art using
                 the latest stable diffusion model and then let you mint it as a
-                gasless NFT on the polygon chain.
+                gasless NFT on the mantle (testnet) chain.
               </Text>
             </Flex>
 
