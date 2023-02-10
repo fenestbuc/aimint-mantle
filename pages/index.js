@@ -4,7 +4,6 @@ import Canvas from "components/canvas";
 import PromptForm from "components/prompt-form";
 import { useAccount } from "wagmi";
 import { ConnectBtn } from "../components/custombutton";
-import Dashboard from "../components/dashboard";
 import { useRef } from "react";
 import Marquee from "react-fast-marquee";
 import { useRouter } from "next/router";
@@ -237,26 +236,14 @@ export default function Home() {
               </Text>
             </div>
             <div className="hover-underline-animation">
-              {auth && isConnected ? (
-                <Text
-                  fontSize={{ base: "11px", lg: "20px" }}
-                  cursor={"pointer"}
-                  ref={btnRef2}
-                  onClick={onOpen2}
-                >
-                  History
-                </Text>
-              ) : (
-                <Text
-                  fontSize={{ base: "11px", lg: "20px" }}
-                  cursor={"not-allowed"}
-                  _hover={{ opacity: "60%" }}
-                >
-                  History
-                </Text>
-              )}
+              <Text
+                fontSize={{ base: "11px", lg: "20px" }}
+                onClick={executeScroll}
+                cursor={"pointer"}
+              >
+                <a href="https://twitter.com/aimintHQ">Twitter</a>
+              </Text>
             </div>
-
             <div className="hover-underline-animation">
               <Text
                 fontSize={{ base: "11px", lg: "20px" }}
@@ -549,24 +536,10 @@ export default function Home() {
                   Home
                 </Text>
 
-                {auth && isConnected ? (
-                  <Text
-                    fontSize="20px"
-                    cursor={"pointer"}
-                    ref={btnRef2}
-                    onClick={onOpen2}
-                  >
-                    History
-                  </Text>
-                ) : (
-                  <Text
-                    fontSize="20px"
-                    cursor={"not-allowed"}
-                    _hover={{ opacity: "60%" }}
-                  >
-                    History
-                  </Text>
-                )}
+                <Text fontSize="20px" cursor={"pointer"}>
+                  <a href="https://twitter.com/aimintHQ">Twitter</a>
+                </Text>
+
                 <Text
                   fontSize="20px"
                   onClick={executeScroll}
@@ -578,8 +551,6 @@ export default function Home() {
             </DrawerBody>
           </DrawerContent>
         </Drawer>
-
-        <Dashboard open={isOpen2} close={onClose2} refr={btnRef2} />
       </Flex>
     </>
   );
