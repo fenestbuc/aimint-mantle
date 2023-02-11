@@ -15,17 +15,41 @@ import {
 import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
+import { Chain } from "wagmi";
 
-const { chains, provider } = configureChains(
-  [chain.polygon],
+const mantleChain = {
+  id: 5001,
+  name: 'Mantle',
+  network: 'Mantle',
+  iconUrl: 'https://www.mantle.xyz/logo-lockup.svg',
+  iconBackground: '#000',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Mantle',
+    symbol: 'BIT',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.testnet.mantle.xyz'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Explorer Testnet', url: 'https://explorer.testnet.mantle.xyz' },
+  },
+  testnet: true,
+};
+
+const { provider, chains } = configureChains(
+  [mantleChain],
   [
-    jsonRpcProvider({ rpc: () => ({ http: "https://rpc.ankr.com/eth" }) }),
-    publicProvider(),
+    jsonRpcProvider({
+      rpc: chain => ({ http: chain.rpcUrls.default.http[0] }),
+    }),
   ]
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
+  appName: 'My RainbowKit App',
   chains,
 });
 
@@ -40,10 +64,8 @@ function MyApp({ Component, pageProps }) {
     components: {
       Tooltip: tooltipTheme,
     },
-  })
+  });
 
-
-  
   return (
     <>
       <Head>

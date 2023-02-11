@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Flex, Button, Input, ButtonGroup, Textarea } from "@chakra-ui/react";
-
+import { ConnectBtn } from "./custombutton";
 const samplePrompts = [
   "portrait photograph of Madison Beer as Pocahontas, young beautiful native american woman, perfect symmetrical face, indigenes feather jewelry, traditional handmade dress, armed female hunter warrior, (((wild west))) environment, Utah landscape, ultra realistic, concept art, elegant, ((intricate)), ((highly detailed)), depth of field, ((professionally color graded)), soft ambient lighting, dusk, 8k, art by artgerm and greg rutkowski and alphonse mucha",
   "Luminescent flower blooming at twilight, cgsociety, r /art, trending on artstation, artstationHD, octane render, highly detailed, vray, volumetric lighting, unreal engine",
@@ -46,19 +46,22 @@ export default function PromptForm(props) {
             resize={"none"}
           />
 
-          <Button
-            type={"submit"}
-            background={"rgba(0, 0, 0, 0.05)"}
-            height={"38px"}
-            width={{ base: "328px", lg: "428px" }}
-            borderRadius={"4px"}
-            border={"1px solid black"}
-            borderStyle={"dashed"}
-            _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
-            _active={{ background: "" }}
-          >
-            Generate
-          </Button>
+          <Flex direction={"row"} gap={"8px"}>
+            <Button
+              type={"submit"}
+              background={"rgba(0, 0, 0, 0.05)"}
+              height={"38px"}
+              width={{ base: "160px", lg: "210px" }}
+              borderRadius={"4px"}
+              border={"1px solid black"}
+              borderStyle={"dashed"}
+              _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
+              _active={{ background: "" }}
+            >
+              Generate
+            </Button>
+            <ConnectBtn />
+          </Flex>
         </Flex>
       </Flex>
     </form>

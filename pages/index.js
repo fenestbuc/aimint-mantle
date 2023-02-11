@@ -6,7 +6,9 @@ import { useAccount } from "wagmi";
 import { ConnectBtn } from "../components/custombutton";
 import { useRef } from "react";
 import Marquee from "react-fast-marquee";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
+import abi from "../contract/abi.json";
 import {
   Flex,
   Text,
@@ -68,6 +70,7 @@ export default function Home() {
   const [minting, setMinting] = useState(false);
   const [minted, setMinted] = useState(false);
   const [generated, setGenerated] = useState(false);
+  const [genipfs, setGenipfs] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [desc, setDesc] = useState("");
   const [error, setError] = useState(null);
@@ -77,6 +80,8 @@ export default function Home() {
   const [copyLink, setCopyLink] = useState("");
   const notInitialRender = useRef(false);
   const [auth, setAuth] = useState();
+  const [ipfs, setIpfs] = useState();
+  const [txn, setTxn] = useState();
 
   useEffect(() => {
     // address != "" ? setAuth(true) : setAuth(false)
@@ -91,6 +96,99 @@ export default function Home() {
       accept: "application/json",
       Authorization: "6ba2e79e-a032-451e-ace7-7494384322b7",
     },
+  };
+
+  const contractAddress = "0xf8C3AE818a4eb7a0c476E5A1AF3277A582335468";
+
+  const contractABI = abi.abi;
+
+  const mint = async (IPFS) => {
+    flag = false;
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const MintContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        let safemint = await MintContract.safeMint(address, ipfs);
+        console.log("NFT MINTED🎉");
+        console.log(
+          `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
+        );
+        setTxn(`https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`);
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    setMinted(true);
+    flag = true;
+
+    if (flag) {
+      newBanner({ message: "NFT Minted", status: "success" });
+    } else {
+      newBanner({ message: "Please try again later", status: "error" });
+    }
+
+    if (!isConnected) {
+      newBanner({ message: "Please try again later", status: "error" });
+    }
+  };
+
+  const IPFS = async () => {
+    setMinting(true);
+    const form = new FormData();
+
+    console.log(predictions[predictions.length - 1].output[0]);
+
+    const link = predictions[predictions.length - 1].output[0];
+
+    const postOptions = {
+      method: "POST",
+
+      headers: {
+        accept: "application/json",
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDAxMWE2NDdGOTBBMTVhODc2Y0Q2RDQ0Y2JDRDExRjY1MTJBNDQxZGQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NjAzNTM4Njk0MCwibmFtZSI6InRlc3QifQ.3yjM7FK6FMBCAsIISpufoswsqcspWamPMM3xSd2_Lmw",
+        "Content-Type": "image/*",
+      },
+
+      body: `{"chain":"mantle","name":"AI MINT","description":\"Prompt: ${desc}\","image":\"${link}\","mint_to_address":"${address}"}`,
+    };
+
+    await fetch("https://api.nft.storage/upload", postOptions)
+      .then((response) => response.json())
+      .then((response) => {
+        // Handle the response
+        console.log(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
+        setIpfs(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
+        setGenipfs(true);
+      })
+
+      // .then((response) => console.log(response))
+      .catch((err) => {
+        console.error(err);
+        flag = false;
+      });
+
+    setMinting(false);
+    if (flag) {
+      newBanner({ message: "IPFS Deployed", status: "success" });
+    } else {
+      newBanner({ message: "Please try again later", status: "error" });
+    }
+
+    if (!isConnected) {
+      newBanner({ message: "Please try again later", status: "error" });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -149,58 +247,9 @@ export default function Home() {
     setGenerated(true);
   };
 
-  const IPFS = async () => {
-    setMinting(true);
-    const form = new FormData();
-
-    console.log(predictions[predictions.length - 1].output[0]);
-
-    const link = predictions[predictions.length - 1].output[0];
-
-    const postOptions = {
-      method: "POST",
-
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDAxMWE2NDdGOTBBMTVhODc2Y0Q2RDQ0Y2JDRDExRjY1MTJBNDQxZGQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NjAzNTM4Njk0MCwibmFtZSI6InRlc3QifQ.3yjM7FK6FMBCAsIISpufoswsqcspWamPMM3xSd2_Lmw",
-        "Content-Type": "image/*",
-      },
-
-      body: `{"chain":"mantle","name":"AI MINT","description":\"Prompt: ${desc}\","image":\"${link}\","mint_to_address":"${address}"}`,
-    };
-
-    await fetch("https://api.nft.storage/upload", postOptions)
-      .then((response) => response.json())
-      .then((response) => {
-        // Handle the response
-        console.log(response);
-        console.log(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
-      })
-      // .then((response) => console.log(response))
-      .catch((err) => {
-        console.error(err);
-        flag = false;
-      });
-
-    setMinting(false);
-    if (flag) {
-      newBanner({ message: "IPFS Deployed", status: "success" });
-    } else {
-      newBanner({ message: "Please try again later", status: "error" });
-    }
-
-    if (!isConnected) {
-      newBanner({ message: "Please try again later", status: "error" });
-    }
-
-    setMinted(true);
-  };
-
   const myRef = useRef(null);
 
   const executeScroll = () => myRef.current.scrollIntoView();
-
   return (
     <>
       <Flex
@@ -281,14 +330,7 @@ export default function Home() {
 
             <Text fontSize={"12px"} fontStyle={"italic"}>
               by <a href={"https://www.ahzam.xyz/"}>ahzam</a> &{" "}
-              <a href={"https://twitter.com/AayushCodes"}>aayush</a> // powered
-              by{" "}
-              <a
-                href={"https://devfolio.co/projects/ai-mint-04e8"}
-                style={{ textDecoration: "underline" }}
-              >
-                devfolio
-              </a>
+              <a href={"https://twitter.com/AayushCodes"}>aayush</a> //
             </Text>
           </Flex>
 
@@ -306,8 +348,6 @@ export default function Home() {
             <PromptForm onSubmit={handleSubmit} />
 
             <Flex gap={"8px"}>
-              <ConnectBtn />
-
               {!(generated && isConnected) ? (
                 <Button
                   cursor={"not-allowed"}
@@ -340,62 +380,65 @@ export default function Home() {
                   {!minting ? <Text> Deploy on IPFS </Text> : <Spinner />}
                 </Button>
               )}
+
+              {!genipfs ? (
+                <Button
+                  cursor={"not-allowed"}
+                  opacity={"60%"}
+                  background={"rgba(0, 0, 0, 0.05)"}
+                  height={"38px"}
+                  width={{ base: "160px", lg: "210px" }}
+                  borderRadius={"4px"}
+                  border={"1px solid black"}
+                  borderStyle={"dashed"}
+                  _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
+                  _active={{ background: "" }}
+                >
+                  Mint NFT
+                </Button>
+              ) : (
+                <Button
+                  onClick={mint}
+                  disabled={minting}
+                  type={"submit"}
+                  background={"rgba(0, 0, 0, 0.05)"}
+                  height={"38px"}
+                  width={{ base: "160px", lg: "210px" }}
+                  borderRadius={"4px"}
+                  border={"1px solid black"}
+                  borderStyle={"dashed"}
+                  _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
+                  _active={{ background: "" }}
+                >
+                  {!minting ? <Text> Mint NFT </Text> : <Spinner />}
+                </Button>
+              )}
             </Flex>
-            {/* {minted ? (
-              <Flex
-                justifyContent={"space-between"}
-                marginTop="16px"
-                align={"center"}
-              >
-                <Text fontStyle={"italic"} fontSize={"14px"}>
-                  Share on socials
-                </Text>
-                <Flex gap="8px">
-                  <Flex
-                    width={"30px"}
-                    height={"30px"}
-                    borderRadius={"4px"}
-                    border={"1px solid black"}
-                    borderStyle={"dashed"}
-                    background={"rgba(0, 0, 0, 0.05)"}
-                    align={"center"}
-                    justify={"center"}
-                    _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
+
+            <Flex>
+              {minted ? (
+                <Flex gap={"16px"} align={"center"}>
+                  <Text
+                    fontStyle={"italic"}
+                    fontSize={"14px"}
+                    fontWeight={"bold"}
+                    _hover={{ textDecor: "underline" }}
                   >
-                    <TwitterShareButton
-                      blankTarget="True"
-                      width="18px"
-                      height="18px"
-                      url={copyLink}
-                      title={"Checkout my cool NFT I minted using AI Mint"}
-                    >
-                      <Image src="twitter.svg" alt="twitter" />
-                    </TwitterShareButton>
-                  </Flex>
-                  <Flex
-                    width={"30px"}
-                    height={"30px"}
-                    borderRadius={"4px"}
-                    border={"1px solid black"}
-                    borderStyle={"dashed"}
-                    background={"rgba(0, 0, 0, 0.05)"}
-                    align={"center"}
-                    justify={"center"}
-                    _hover={{
-                      background: "rgba(0, 0, 0, 0.1)",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => navigator.clipboard.writeText(copyLink)}
+                    <a href={ipfs}>IPFS ↗</a>
+                  </Text>
+                  <Text
+                    fontStyle={"italic"}
+                    fontSize={"14px"}
+                    fontWeight={"bold"}
+                    _hover={{ textDecor: "underline" }}
                   >
-                    <Tooltip co label="click to copy" placement="bottom">
-                      <Image src={"link.svg"} alt="link" />
-                    </Tooltip>
-                  </Flex>
+                    <a href={txn}>Transaction ↗</a>
+                  </Text>
                 </Flex>
-              </Flex>
-            ) : (
-              <></>
-            )} */}
+              ) : (
+                <></>
+              )}
+            </Flex>
           </Flex>
 
           <Flex width={{ base: "360px", md: "360px", lg: "584px" }}>
@@ -427,130 +470,8 @@ export default function Home() {
                 gasless NFT on the mantle (testnet) chain.
               </Text>
             </Flex>
-
-            <Flex flexDir={"column"} gap={"22px"}>
-              <Text
-                fontWeight={"500"}
-                fontSize={"20px"}
-                textDecor={"underline"}
-              >
-                Shipping Logs
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → presented at{" "}
-                <a
-                  href="https://twitter.com/ETHIndiaco/status/1621832301641609218?s=20&t=z6TzzPi2bZrDpUpCQqnHzw"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  EthforAll
-                </a>{" "}
-                kickoff (hyderabad)
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → shipped & demoed at{" "}
-                <a
-                  href="https://buildspace.so/nights-and-weekends"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  n&w s2 w buildspace
-                </a>
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → got featured in{" "}
-                <a
-                  href="https://devfolio.co/blog/grant-rewind-a-retrospective-look-at-season-1-of-our-grants-program/"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  devfolio blog
-                </a>
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → won{" "}
-                <a
-                  href="https://ethindiagrants.devfolio.co/"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  Eth India grant
-                </a>
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → launched on{" "}
-                <a
-                  href="https://www.producthunt.com/posts/ai-mint"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  product hunt
-                </a>
-              </Text>
-
-              <Text fontStyle={"italic"} fontSize={"14px"}>
-                → shipped{" "}
-                <a
-                  href="https://twitter.com/0xahzam/status/1592073010034659328?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed&ref_url=notion%3A%2F%2Fwww.notion.so%2Fahzamkhan%2Fshipping-logs-f39b2abf98e7435da8f736bca0ccf3b2"
-                  style={{ textDecoration: "underline" }}
-                  target={"_blank"}
-                  rel={"noreferrer"}
-                >
-                  v1
-                </a>
-              </Text>
-            </Flex>
           </Flex>
         </Flex>
-
-        <Drawer
-          isOpen={isOpen}
-          placement="right"
-          onClose={onClose}
-          finalFocusRef={btnRef}
-          size={"xs"}
-          fontFamily={"IBM Plex Mono, monospace"}
-        >
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton _active={{}} />
-            {/* <DrawerHeader>Create your account</DrawerHeader> */}
-
-            <DrawerBody marginTop={"40px"}>
-              <Flex
-                gap={"20px"}
-                flexDirection={"column"}
-                fontFamily={"IBM Plex Mono, monospace"}
-              >
-                <Text fontSize="20px" cursor={"pointer"}>
-                  Home
-                </Text>
-
-                <Text fontSize="20px" cursor={"pointer"}>
-                  <a href="https://twitter.com/aimintHQ">Twitter</a>
-                </Text>
-
-                <Text
-                  fontSize="20px"
-                  onClick={executeScroll}
-                  cursor={"pointer"}
-                >
-                  About
-                </Text>
-              </Flex>
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
       </Flex>
     </>
   );
