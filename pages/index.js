@@ -416,8 +416,6 @@ export default function Home() {
             </Flex>
 
             <Flex flexDir={"column"}>
-              
-
               {minted ? (
                 <Flex gap={"16px"} align={"center"} marginTop={"16px"}>
                   <Text
@@ -438,16 +436,21 @@ export default function Home() {
                   </Text>
                 </Flex>
               ) : (
-                <><Text width={{ base: "328px", lg: "428px" }}>
-                you need to have mantle faucet in order to mint, grab some from
-                {"  "}
-                <a
-                  href="https://mirror.xyz/0xmantle.eth/qIDSO3AsFnXmwVLSYfODZWOpK_0K01UdvR3ZxUCtCjw"
-                  style={{ textDecoration: "underline" }}
-                >
-                  here
-                </a>
-              </Text></>
+                <>
+                  <Text width={{ base: "328px", lg: "428px" }}>
+                    you need to have some funds on mantle on your wallet for
+                    this to work,{" "}
+                    <i>
+                      grab some from{" "}
+                      <a
+                        href="https://mirror.xyz/0xmantle.eth/qIDSO3AsFnXmwVLSYfODZWOpK_0K01UdvR3ZxUCtCjw"
+                        style={{ textDecoration: "underline" }}
+                      >
+                        here
+                      </a>
+                    </i>
+                  </Text>
+                </>
               )}
             </Flex>
           </Flex>

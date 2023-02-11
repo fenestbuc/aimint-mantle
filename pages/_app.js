@@ -69,7 +69,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>aimint.fun</title>
+        <title>aimint.fun | mantle </title>
 
         <link rel="shortcut icon" href="favicon.png" />
 
