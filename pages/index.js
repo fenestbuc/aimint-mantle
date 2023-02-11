@@ -415,9 +415,11 @@ export default function Home() {
               )}
             </Flex>
 
-            <Flex>
+            <Flex flexDir={"column"}>
+              
+
               {minted ? (
-                <Flex gap={"16px"} align={"center"}>
+                <Flex gap={"16px"} align={"center"} marginTop={"16px"}>
                   <Text
                     fontStyle={"italic"}
                     fontSize={"14px"}
@@ -436,7 +438,16 @@ export default function Home() {
                   </Text>
                 </Flex>
               ) : (
-                <></>
+                <><Text width={{ base: "328px", lg: "428px" }}>
+                you need to have mantle faucet in order to mint, grab some from
+                {"  "}
+                <a
+                  href="https://mirror.xyz/0xmantle.eth/qIDSO3AsFnXmwVLSYfODZWOpK_0K01UdvR3ZxUCtCjw"
+                  style={{ textDecoration: "underline" }}
+                >
+                  here
+                </a>
+              </Text></>
               )}
             </Flex>
           </Flex>
