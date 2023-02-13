@@ -51,7 +51,7 @@ export default function PromptForm(props) {
               type={"submit"}
               background={"rgba(0, 0, 0, 0.05)"}
               height={"38px"}
-              width={{ base: "160px", lg: "210px" }}
+              width={{ base: "328px", lg: "428px" }}
               borderRadius={"4px"}
               border={"1px solid black"}
               borderStyle={"dashed"}
@@ -60,7 +60,6 @@ export default function PromptForm(props) {
             >
               Generate
             </Button>
-            <ConnectBtn />
           </Flex>
         </Flex>
       </Flex>

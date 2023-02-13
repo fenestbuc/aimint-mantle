@@ -9,7 +9,7 @@ import Marquee from "react-fast-marquee";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import abi from "../contract/abi.json";
-import faucet from "../contract/faucet.json"
+import faucet from "../contract/faucet.json";
 import {
   Flex,
   Text,
@@ -25,6 +25,17 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+} from "@chakra-ui/react";
+
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Input,
 } from "@chakra-ui/react";
 
 import { TwitterShareButton } from "next-share";
@@ -103,9 +114,9 @@ export default function Home() {
 
   const contractABI = abi.abi;
 
-  const faucetABI = faucet.abi
+  const faucetABI = faucet.abi;
 
-  const mint = async (IPFS) => {
+  const mint = async (link) => {
     flag = false;
     try {
       const { ethereum } = window;
@@ -119,7 +130,7 @@ export default function Home() {
           signer
         );
 
-        let safemint = await MintContract.safeMint(address, ipfs);
+        let safemint = await MintContract.safeMint(address, link);
         console.log("NFT MINTED🎉");
         console.log(
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
@@ -147,10 +158,9 @@ export default function Home() {
   };
 
   const IPFS = async () => {
-    setMinting(true);
     const form = new FormData();
 
-    console.log(predictions[predictions.length - 1].output[0]);
+    // console.log(predictions[predictions.length - 1].output[0]);
 
     const link = predictions[predictions.length - 1].output[0];
 
@@ -182,7 +192,6 @@ export default function Home() {
         flag = false;
       });
 
-    setMinting(false);
     if (flag) {
       newBanner({ message: "IPFS Deployed", status: "success" });
     } else {
@@ -194,28 +203,14 @@ export default function Home() {
     }
   };
 
-  const claim = async() => {
-    try {
-      const { ethereum } = window;
+  const main = async () => {
+    setMinting(true);
+    await IPFS();
+    mint(ipfs);
+    setMinting(false);
+  };
 
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const MintContract = new ethers.Contract(
-          contractAddress,
-          faucetABI,
-          signer
-        );
 
-        let safemint = await MintContract.safeMint();
-        console.log("Faucet Claimed");
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   const handleSubmit = async (e) => {
     setDesc(e.target.prompt.value);
@@ -274,6 +269,16 @@ export default function Home() {
   };
 
   const myRef = useRef(null);
+
+  const [modal, setModal] = useState(false);
+  const loaded = () => {
+    setModal(true);
+  };
+  const {
+    isOpen: modopen,
+    onOpen: modonopen,
+    onClose: modonclose,
+  } = useDisclosure();
 
   const executeScroll = () => myRef.current.scrollIntoView();
   return (
@@ -374,6 +379,7 @@ export default function Home() {
             <PromptForm onSubmit={handleSubmit} />
 
             <Flex gap={"8px"}>
+              <ConnectBtn />
               {!(generated && isConnected) ? (
                 <Button
                   cursor={"not-allowed"}
@@ -387,11 +393,11 @@ export default function Home() {
                   _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
                   _active={{ background: "" }}
                 >
-                  Deploy on IPFS
+                  Mint this NFT
                 </Button>
               ) : (
                 <Button
-                  onClick={IPFS}
+                  onClick={main}
                   disabled={minting}
                   type={"submit"}
                   background={"rgba(0, 0, 0, 0.05)"}
@@ -403,40 +409,7 @@ export default function Home() {
                   _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
                   _active={{ background: "" }}
                 >
-                  {!minting ? <Text> Deploy on IPFS </Text> : <Spinner />}
-                </Button>
-              )}
-
-              {!genipfs ? (
-                <Button
-                  cursor={"not-allowed"}
-                  opacity={"60%"}
-                  background={"rgba(0, 0, 0, 0.05)"}
-                  height={"38px"}
-                  width={{ base: "160px", lg: "210px" }}
-                  borderRadius={"4px"}
-                  border={"1px solid black"}
-                  borderStyle={"dashed"}
-                  _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
-                  _active={{ background: "" }}
-                >
-                  Mint NFT
-                </Button>
-              ) : (
-                <Button
-                  onClick={mint}
-                  disabled={minting}
-                  type={"submit"}
-                  background={"rgba(0, 0, 0, 0.05)"}
-                  height={"38px"}
-                  width={{ base: "160px", lg: "210px" }}
-                  borderRadius={"4px"}
-                  border={"1px solid black"}
-                  borderStyle={"dashed"}
-                  _hover={{ background: "rgba(0, 0, 0, 0.1)" }}
-                  _active={{ background: "" }}
-                >
-                  {!minting ? <Text> Mint NFT </Text> : <Spinner />}
+                  {!minting ? <Text> Mint this NFT </Text> : <Spinner />}
                 </Button>
               )}
             </Flex>
