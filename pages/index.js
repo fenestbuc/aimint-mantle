@@ -194,7 +194,7 @@ export default function Home() {
     }
   };
 
-  const faucet = async() => {
+  const claim = async() => {
     try {
       const { ethereum } = window;
 
