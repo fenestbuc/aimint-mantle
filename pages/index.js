@@ -9,6 +9,7 @@ import Marquee from "react-fast-marquee";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import abi from "../contract/abi.json";
+import faucet from "../contract/faucet.json"
 import {
   Flex,
   Text,
@@ -102,6 +103,8 @@ export default function Home() {
 
   const contractABI = abi.abi;
 
+  const faucetABI = faucet.abi
+
   const mint = async (IPFS) => {
     flag = false;
     try {
@@ -190,6 +193,29 @@ export default function Home() {
       newBanner({ message: "Please try again later", status: "error" });
     }
   };
+
+  const faucet = async() => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const MintContract = new ethers.Contract(
+          contractAddress,
+          faucetABI,
+          signer
+        );
+
+        let safemint = await MintContract.safeMint();
+        console.log("Faucet Claimed");
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleSubmit = async (e) => {
     setDesc(e.target.prompt.value);
