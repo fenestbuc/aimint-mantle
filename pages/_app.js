@@ -21,7 +21,7 @@ const mantleChain = {
   id: 5001,
   name: 'Mantle',
   network: 'Mantle',
-  iconUrl: 'https://www.mantle.xyz/logo-lockup.svg',
+  iconUrl: 'mantle_logo.png',
   iconBackground: '#000',
   nativeCurrency: {
     decimals: 18,

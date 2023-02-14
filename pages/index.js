@@ -88,7 +88,7 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
-  const flag = true;
+  const flag = false;
   const [copyLink, setCopyLink] = useState("");
   const notInitialRender = useRef(false);
   const [auth, setAuth] = useState();
@@ -117,7 +117,7 @@ export default function Home() {
   const faucetABI = faucet.abi;
 
   const mint = async (link) => {
-    flag = false;
+    flag = false
     try {
       const { ethereum } = window;
 
@@ -136,6 +136,7 @@ export default function Home() {
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
         );
         setTxn(`https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`);
+        flag = true;
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -144,7 +145,6 @@ export default function Home() {
     }
 
     setMinted(true);
-    flag = true;
 
     if (flag) {
       newBanner({ message: "NFT Minted", status: "success" });
@@ -158,6 +158,7 @@ export default function Home() {
   };
 
   const IPFS = async () => {
+    flag = false
     const form = new FormData();
 
     // console.log(predictions[predictions.length - 1].output[0]);
@@ -184,12 +185,13 @@ export default function Home() {
         console.log(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
         setIpfs(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
         setGenipfs(true);
+        flag = true;
       })
 
       // .then((response) => console.log(response))
       .catch((err) => {
         console.error(err);
-        flag = false;
+        flag2 = false;
       });
 
     if (flag) {
@@ -209,8 +211,6 @@ export default function Home() {
     mint(ipfs);
     setMinting(false);
   };
-
-
 
   const handleSubmit = async (e) => {
     setDesc(e.target.prompt.value);
