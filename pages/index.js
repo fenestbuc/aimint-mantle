@@ -1,4 +1,5 @@
-import { React, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+const axios = require("axios");
 import { useDisclosure } from "@chakra-ui/react";
 import Canvas from "components/canvas";
 import PromptForm from "components/prompt-form";
@@ -7,9 +8,7 @@ import { ConnectBtn } from "../components/custombutton";
 import { useRef } from "react";
 import Marquee from "react-fast-marquee";
 import { ethers } from "ethers";
-import { useRouter } from "next/router";
 import abi from "../contract/abi.json";
-import faucet from "../contract/faucet.json";
 import {
   Flex,
   Text,
@@ -17,67 +16,20 @@ import {
   Spinner,
   Divider,
   Image,
-  Tooltip,
   Drawer,
   DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
 } from "@chakra-ui/react";
 
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Input,
-} from "@chakra-ui/react";
-
-import { TwitterShareButton } from "next-share";
-
 import BannerToast from "../components/banner";
-import { add } from "lodash";
-
-function useIsMounted() {
-  const isMounted = useRef(false);
-
-  useEffect(() => {
-    isMounted.current = true;
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  return useCallback(() => isMounted.current, []);
-}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
-  const breakpoints = {
-    sm: "30em",
-    md: "48em",
-    lg: "62em",
-    xl: "80em",
-    "2xl": "96em",
-  };
-
-  const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isOpen2,
-    onOpen: onOpen2,
-    onClose: onClose2,
-  } = useDisclosure();
-  const btnRef2 = useRef();
   const btnRef = useRef();
-  const [txnHash, setTxnHash] = useState("");
   const { address, isConnected } = useAccount();
   const [minting, setMinting] = useState(false);
   const [minted, setMinted] = useState(false);
@@ -89,35 +41,67 @@ export default function Home() {
   const [maskImage, setMaskImage] = useState(null);
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const flag = false;
-  const [copyLink, setCopyLink] = useState("");
-  const notInitialRender = useRef(false);
   const [auth, setAuth] = useState();
   const [ipfs, setIpfs] = useState();
   const [txn, setTxn] = useState();
+  const [state, newBanner] = BannerToast();
+  const contractAddress = "0xf8C3AE818a4eb7a0c476E5A1AF3277A582335468";
+  const contractABI = abi.abi;
 
   useEffect(() => {
     // address != "" ? setAuth(true) : setAuth(false)
     setAuth(isConnected);
   }, []);
 
-  const [state, newBanner] = BannerToast();
+  const IPFS = async () => {
+    flag = false;
+    const link = predictions[predictions.length - 1].output[0];
 
-  const getOptions = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: "6ba2e79e-a032-451e-ace7-7494384322b7",
-    },
+    try {
+      var data = JSON.stringify({
+        chain: "mantle",
+        name: "AI MINT",
+        description: { desc }["desc"],
+        image: link,
+        mint_to_address: { address }["address"],
+      });
+
+      const config = await axios({
+        method: "post",
+        url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        headers: {
+          pinata_api_key: process.env.NEXT_PUBLIC_PINATA_API_KEY,
+          pinata_secret_api_key: process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY,
+          "Content-Type": "application/json",
+        },
+        data: data,
+      });
+      console.log(`https://ipfs.io/ipfs/${config.data.IpfsHash}`);
+      setIpfs(`https://ipfs.io/ipfs/${config.data.IpfsHash}`);
+      setGenipfs(true);
+      flag = true;
+    } catch (error) {
+      console.log("Error sending File to IPFS: ");
+      console.log(error);
+      flag = false;
+    }
+
+    if (flag) {
+      newBanner({ message: "IPFS Deployed", status: "success" });
+    } else {
+      newBanner({
+        message: "IPFS failed. Please try again later",
+        status: "error",
+      });
+    }
+
+    if (!isConnected) {
+      newBanner({ message: "Please connect your wallet.", status: "error" });
+    }
   };
 
-  const contractAddress = "0xf8C3AE818a4eb7a0c476E5A1AF3277A582335468";
-
-  const contractABI = abi.abi;
-
-  const faucetABI = faucet.abi;
-
-  const mint = async (link) => {
-    flag = false
+  const mint = async () => {
+    flag = false;
     try {
       const { ethereum } = window;
 
@@ -130,7 +114,7 @@ export default function Home() {
           signer
         );
 
-        let safemint = await MintContract.safeMint(address, link);
+        let safemint = await MintContract.safeMint(address, ipfs);
         console.log("NFT MINTED🎉");
         console.log(
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
@@ -143,72 +127,26 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-
     setMinted(true);
 
     if (flag) {
       newBanner({ message: "NFT Minted", status: "success" });
     } else {
-      newBanner({ message: "Please try again later", status: "error" });
-    }
-
-    if (!isConnected) {
-      newBanner({ message: "Please try again later", status: "error" });
-    }
-  };
-
-  const IPFS = async () => {
-    flag = false
-    const form = new FormData();
-
-    // console.log(predictions[predictions.length - 1].output[0]);
-
-    const link = predictions[predictions.length - 1].output[0];
-
-    const postOptions = {
-      method: "POST",
-
-      headers: {
-        accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDAxMWE2NDdGOTBBMTVhODc2Y0Q2RDQ0Y2JDRDExRjY1MTJBNDQxZGQiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY3NjAzNTM4Njk0MCwibmFtZSI6InRlc3QifQ.3yjM7FK6FMBCAsIISpufoswsqcspWamPMM3xSd2_Lmw",
-        "Content-Type": "image/*",
-      },
-
-      body: `{"chain":"mantle","name":"AI MINT","description":\"Prompt: ${desc}\","image":\"${link}\","mint_to_address":"${address}"}`,
-    };
-
-    await fetch("https://api.nft.storage/upload", postOptions)
-      .then((response) => response.json())
-      .then((response) => {
-        // Handle the response
-        console.log(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
-        setIpfs(`https://ipfs.io/ipfs/${response["value"]["cid"]}`);
-        setGenipfs(true);
-        flag = true;
-      })
-
-      // .then((response) => console.log(response))
-      .catch((err) => {
-        console.error(err);
-        flag2 = false;
+      newBanner({
+        message: "NFT not minted. Please try again later",
+        status: "error",
       });
-
-    if (flag) {
-      newBanner({ message: "IPFS Deployed", status: "success" });
-    } else {
-      newBanner({ message: "Please try again later", status: "error" });
     }
 
     if (!isConnected) {
-      newBanner({ message: "Please try again later", status: "error" });
+      newBanner({ message: "Please connect your wallet.", status: "error" });
     }
   };
 
   const main = async () => {
     setMinting(true);
     await IPFS();
-    mint(ipfs);
+    mint();
     setMinting(false);
   };
 
@@ -270,16 +208,6 @@ export default function Home() {
 
   const myRef = useRef(null);
 
-  const [modal, setModal] = useState(false);
-  const loaded = () => {
-    setModal(true);
-  };
-  const {
-    isOpen: modopen,
-    onOpen: modonopen,
-    onClose: modonclose,
-  } = useDisclosure();
-
   const executeScroll = () => myRef.current.scrollIntoView();
   return (
     <>
@@ -293,15 +221,15 @@ export default function Home() {
       >
         <Flex bg={"black"} color={"white"} width={"100%"} userSelect="none">
           <Flex paddingTop={"10px"} paddingBottom={"10px"}>
-            <Text>
-              <Marquee gradientColor={"[0, 0, 0]"}>
+            <Marquee gradientColor={"[0, 0, 0]"}>
+              <Text>
                 Mantle Testnet Version Mantle Testnet Version Mantle Testnet
                 Version Mantle Testnet Version Mantle Testnet Version Mantle
                 Testnet Version Mantle Testnet Version Mantle Testnet Version
                 Mantle Testnet Version Mantle Testnet Version Mantle Testnet
                 Version Mantle Testnet Version
-              </Marquee>
-            </Text>
+              </Text>
+            </Marquee>
           </Flex>
         </Flex>
         <Flex gap={{ base: "184px", md: "776px" }} marginTop={"30px"}>
@@ -316,12 +244,14 @@ export default function Home() {
               </Text>
             </div>
             <div className="hover-underline-animation">
-              <Text
-                fontSize={{ base: "11px", lg: "20px" }}
-                onClick={executeScroll}
-                cursor={"pointer"}
-              >
-                <a href="https://twitter.com/aimintHQ">Twitter</a>
+              <Text fontSize={{ base: "11px", lg: "20px" }} cursor={"pointer"}>
+                <a
+                  href="https://twitter.com/aimintHQ"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
+                  Twitter
+                </a>
               </Text>
             </div>
             <div className="hover-underline-animation">
@@ -486,6 +416,46 @@ export default function Home() {
           </Flex>
         </Flex>
       </Flex>
+
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+        size={"xs"}
+        fontFamily={"IBM Plex Mono, monospace"}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton _active={{}} />
+
+          <DrawerBody marginTop={"40px"}>
+            <Flex
+              gap={"20px"}
+              flexDirection={"column"}
+              fontFamily={"IBM Plex Mono, monospace"}
+            >
+              <Text fontSize="20px" cursor={"pointer"}>
+                Home
+              </Text>
+
+              <Text fontSize="20px" cursor={"pointer"}>
+                <a
+                  href="https://twitter.com/aimintHQ"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
+                  Twitter
+                </a>
+              </Text>
+
+              <Text fontSize="20px" onClick={executeScroll} cursor={"pointer"}>
+                About
+              </Text>
+            </Flex>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
