@@ -42,7 +42,8 @@ export default function Home() {
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const flag = false;
   const [auth, setAuth] = useState();
-  const [ipfs, setIpfs] = useState();
+  // const [ipfs, setIpfs] = useState();
+  var ipfs;
   const [txn, setTxn] = useState();
   const [state, newBanner] = BannerToast();
   const contractAddress = "0xf8C3AE818a4eb7a0c476E5A1AF3277A582335468";
@@ -77,7 +78,7 @@ export default function Home() {
         data: data,
       });
       console.log(`https://ipfs.io/ipfs/${config.data.IpfsHash}`);
-      setIpfs(`https://ipfs.io/ipfs/${config.data.IpfsHash}`);
+      ipfs = `https://ipfs.io/ipfs/${config.data.IpfsHash}`;
       setGenipfs(true);
       flag = true;
     } catch (error) {
@@ -102,6 +103,7 @@ export default function Home() {
 
   const mint = async () => {
     flag = false;
+
     try {
       const { ethereum } = window;
 
@@ -113,8 +115,9 @@ export default function Home() {
           contractABI,
           signer
         );
-
+        console.log("check ", ipfs);
         let safemint = await MintContract.safeMint(address, ipfs);
+
         console.log("NFT MINTED🎉");
         console.log(
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
@@ -122,7 +125,6 @@ export default function Home() {
         setTxn(`https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`);
         flag = true;
         setMinted(true);
-
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -460,7 +462,6 @@ export default function Home() {
     </>
   );
 }
-
 function readAsDataURL(file) {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
