@@ -100,7 +100,7 @@ export default function Home() {
     }
   };
 
-  const mint = async (link) => {
+  const mint = async () => {
     flag = false;
     try {
       const { ethereum } = window;
@@ -114,7 +114,7 @@ export default function Home() {
           signer
         );
 
-        let safemint = await MintContract.safeMint(address, link);
+        let safemint = await MintContract.safeMint(address, ipfs);
         console.log("NFT MINTED🎉");
         console.log(
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
@@ -147,7 +147,7 @@ export default function Home() {
   const main = async () => {
     setMinting(true);
     await IPFS();
-    await mint(ipfs);
+    await mint();
     setMinting(false);
   };
 
