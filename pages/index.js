@@ -42,7 +42,7 @@ export default function Home() {
   const [userUploadedImage, setUserUploadedImage] = useState(null);
   const flag = false;
   const [auth, setAuth] = useState();
-  // const [ipfs, setIpfs] = useState();
+  const [ipdisplay, setIpdisplay] = useState();
   var ipfs;
   const [txn, setTxn] = useState();
   const [state, newBanner] = BannerToast();
@@ -150,6 +150,7 @@ export default function Home() {
     setMinting(true);
     await IPFS();
     mint();
+    setIpdisplay(ipfs);
     setMinting(false);
   };
 
@@ -356,7 +357,9 @@ export default function Home() {
                     fontWeight={"bold"}
                     _hover={{ textDecor: "underline" }}
                   >
-                    <a href={ipfs}>IPFS ↗</a>
+                    <a href={ipdisplay} target={"_blank"} rel="noreferrer">
+                      IPFS ↗
+                    </a>
                   </Text>
                   <Text
                     fontStyle={"italic"}
@@ -364,7 +367,9 @@ export default function Home() {
                     fontWeight={"bold"}
                     _hover={{ textDecor: "underline" }}
                   >
-                    <a href={txn}>Transaction ↗</a>
+                    <a href={txn} target={"_blank"} rel="noreferrer">
+                      Transaction ↗
+                    </a>
                   </Text>
                 </Flex>
               ) : (
