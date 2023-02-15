@@ -100,7 +100,7 @@ export default function Home() {
     }
   };
 
-  const mint = async () => {
+  const mint = async (link) => {
     flag = false;
     try {
       const { ethereum } = window;
@@ -114,20 +114,21 @@ export default function Home() {
           signer
         );
 
-        let safemint = await MintContract.safeMint(address, ipfs);
+        let safemint = await MintContract.safeMint(address, link);
         console.log("NFT MINTED🎉");
         console.log(
           `https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`
         );
         setTxn(`https://explorer.testnet.mantle.xyz/tx/${safemint["hash"]}`);
         flag = true;
+        setMinted(true);
+
       } else {
         console.log("Ethereum object doesn't exist!");
       }
     } catch (error) {
       console.log(error);
     }
-    setMinted(true);
 
     if (flag) {
       newBanner({ message: "NFT Minted", status: "success" });
@@ -146,7 +147,7 @@ export default function Home() {
   const main = async () => {
     setMinting(true);
     await IPFS();
-    mint();
+    await mint(ipfs);
     setMinting(false);
   };
 
