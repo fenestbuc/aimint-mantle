@@ -46,8 +46,38 @@ export default function Home() {
   var ipfs;
   const [txn, setTxn] = useState();
   const [state, newBanner] = BannerToast();
-  const contractAddress = "0xf8C3AE818a4eb7a0c476E5A1AF3277A582335468";
+  const contractAddress = "0x54e92d7A0Ef42Af9f9E8Dd45d6Ed393C83A23D65";
   const contractABI = abi.abi;
+
+  const test = async () => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    const MintContract = new ethers.Contract(
+      contractAddress,
+      contractABI,
+      signer
+    );
+    try {
+      const tokenCounter = await MintContract._tokenIdCounter();
+      const numTokens = parseInt(tokenCounter["_hex"], 16);
+      console.log(numTokens);
+      const nfts = [];
+      for (let i = 0; i < numTokens; i++) {
+        let tempOwner = await MintContract.ownerOf(i);
+        if (tempOwner == address) {
+          let tempUri = await MintContract.tokenURI(i);
+          nfts.push(tempUri);
+        }
+      }
+      nfts.map(async (nft) => {
+        let response = await fetch(nft);
+        let json = await response.json();
+        console.log(json["image"]);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   useEffect(() => {
     // address != "" ? setAuth(true) : setAuth(false)
@@ -105,7 +135,7 @@ export default function Home() {
     flag = false;
 
     try {
-      const { ethereum } = window;
+      // const { ethereum } = window;
 
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
@@ -243,9 +273,7 @@ export default function Home() {
           </Flex>
           <Flex gap={"32px"} display={{ base: "none", lg: "flex" }}>
             <div className="hover-underline-animation">
-              <Text fontSize={{ base: "11px", lg: "20px" }} cursor={"pointer"}>
-                Home
-              </Text>
+              <Button onClick={test}>History</Button>
             </div>
             <div className="hover-underline-animation">
               <Text fontSize={{ base: "11px", lg: "20px" }} cursor={"pointer"}>
