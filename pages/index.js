@@ -147,7 +147,7 @@ export default function Home() {
   const main = async () => {
     setMinting(true);
     await IPFS();
-    await mint();
+    mint();
     setMinting(false);
   };
 
