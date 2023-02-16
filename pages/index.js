@@ -62,17 +62,21 @@ export default function Home() {
       const numTokens = parseInt(tokenCounter["_hex"], 16);
       console.log(numTokens);
       const nfts = [];
+      const tokenIds = [];
       for (let i = 0; i < numTokens; i++) {
         let tempOwner = await MintContract.ownerOf(i);
         if (tempOwner == address) {
           let tempUri = await MintContract.tokenURI(i);
           nfts.push(tempUri);
+          tokenIds.push(i);
         }
       }
-      nfts.map(async (nft) => {
+      nfts.map(async (nft, index) => {
         let response = await fetch(nft);
         let json = await response.json();
+        console.log("Token ID " + tokenIds[index]);
         console.log(json["image"]);
+        console.log(json["description"]);
       });
     } catch (e) {
       console.log(e);
