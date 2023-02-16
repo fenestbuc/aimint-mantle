@@ -83,9 +83,9 @@ export default function Home() {
       nfts.map(async (nft, index) => {
         let response = await fetch(nft);
         let json = await response.json();
-        console.log("Token ID " + tokenIds[index]);
-        console.log(json["image"]);
-        console.log(json["description"]);
+        // console.log("Token ID " + tokenIds[index]);
+        // console.log(json["image"]);
+        // console.log(json["description"]);
 
         resp.push({
           TokenID: tokenIds[index],
@@ -93,7 +93,7 @@ export default function Home() {
           Description: json["description"],
         });
         resp.reverse();
-        console.log(resp);
+        // console.log(resp);
         setArr(resp);
         await sleep(1000);
         sethistory(true);
@@ -577,10 +577,10 @@ export default function Home() {
                   {isConnected ? (
                     <>
                       <Spinner />
-                      <text>This might take a while</text>
+                      <Text>This might take a while</Text>
                     </>
                   ) : (
-                    <text>Connect your Wallet</text>
+                    <Text>Connect your Wallet</Text>
                   )}
                 </>
               )}

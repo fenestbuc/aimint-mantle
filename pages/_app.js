@@ -81,28 +81,28 @@ function MyApp({ Component, pageProps }) {
 
         <meta
           name="title"
-          content="AI Mint — generative art meets digital wallets"
+          content="AI Mint x Mantle — generative art meets digital wallets"
         />
         <meta
           name="description"
-          content="ai creativity meets web3, mint gasless nft's straight out of stable diffusion"
+          content="ai creativity meets web3, mint gasless nft's on mantle chain"
         />
 
         <meta property="og:type" content="website" key="og-type" />
-        <meta property="og:url" content="https://aimint.fun/" key="og-url" />
+        <meta property="og:url" content="https://mantle.aimint.fun/" key="og-url" />
         <meta
           property="og:title"
-          content="AI Mint — generative art meets digital wallets"
+          content="AI Mint x Mantle — generative art meets digital wallets"
           key="og-title"
         />
         <meta
           property="og:description"
-          content="ai creativity meets web3, mint gasless nft's straight out of stable diffusion"
+          content="ai creativity meets web3, mint gasless nft's on mantle chain"
           key="og-desc"
         />
         <meta
           property="og:image"
-          content="https://i.postimg.cc/KYw10ZB4/aimintog.png"
+          content="https://i.ibb.co/V26PQnX/aimint-mantle.png"
           key="og-image"
         />
 
@@ -114,17 +114,17 @@ function MyApp({ Component, pageProps }) {
         />
         <meta
           property="twitter:title"
-          content="AI Mint — generative art meets digital wallets"
+          content="AI Mint x Mantle — generative art meets digital wallets"
           key="twt-title"
         />
         <meta
           property="twitter:description"
-          content="ai creativity meets web3, mint gasless nft's straight out of stable diffusion"
+          content="ai creativity meets web3, mint gasless nft's on mantle chain"
           key="twt-desc"
         />
         <meta
           property="twitter:image"
-          content="https://i.postimg.cc/KYw10ZB4/aimintog.png"
+          content="https://i.ibb.co/V26PQnX/aimint-mantle.png"
           key="twt-img"
         />
       </Head>
