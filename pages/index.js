@@ -54,7 +54,8 @@ export default function Home() {
   const [state, newBanner] = BannerToast();
   const contractAddress = "0x54e92d7A0Ef42Af9f9E8Dd45d6Ed393C83A23D65";
   const contractABI = abi.abi;
-  const [resp, setResp] = useState([]);
+  const [arr, setArr] = useState();
+  const resp = [];
   const [history, sethistory] = useState(false);
 
   const test = async () => {
@@ -85,13 +86,16 @@ export default function Home() {
         console.log("Token ID " + tokenIds[index]);
         console.log(json["image"]);
         console.log(json["description"]);
-        var obj = {
+
+        resp.push({
           TokenID: tokenIds[index],
           Image: json["image"],
           Description: json["description"],
-        };
-        setResp([obj]);
-        console.log([obj]);
+        });
+        resp.reverse();
+        console.log(resp);
+        setArr(resp);
+        await sleep(1000);
         sethistory(true);
       });
     } catch (e) {
@@ -546,7 +550,7 @@ export default function Home() {
             >
               {history ? (
                 <>
-                  {resp.map((item) => {
+                  {arr.map((item) => {
                     return (
                       <div key={item.TokenID}>
                         <Flex
@@ -569,7 +573,7 @@ export default function Home() {
                   })}
                 </>
               ) : (
-                <Spinner />
+                <Spinner/>
               )}
             </Flex>
           </DrawerBody>
