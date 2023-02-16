@@ -573,7 +573,16 @@ export default function Home() {
                   })}
                 </>
               ) : (
-                <Spinner/>
+                <>
+                  {isConnected ? (
+                    <>
+                      <Spinner />
+                      <text>This might take a while</text>
+                    </>
+                  ) : (
+                    <text>Connect your Wallet</text>
+                  )}
+                </>
               )}
             </Flex>
           </DrawerBody>
