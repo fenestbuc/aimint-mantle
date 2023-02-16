@@ -29,7 +29,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpen2,
+    onOpen: onOpen2,
+    onClose: onClose2,
+  } = useDisclosure();
   const btnRef = useRef();
+  const btnRef2 = useRef();
   const { address, isConnected } = useAccount();
   const [minting, setMinting] = useState(false);
   const [minted, setMinted] = useState(false);
@@ -48,6 +54,8 @@ export default function Home() {
   const [state, newBanner] = BannerToast();
   const contractAddress = "0x54e92d7A0Ef42Af9f9E8Dd45d6Ed393C83A23D65";
   const contractABI = abi.abi;
+  const [resp, setResp] = useState([]);
+  const [history, sethistory] = useState(false);
 
   const test = async () => {
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -77,6 +85,14 @@ export default function Home() {
         console.log("Token ID " + tokenIds[index]);
         console.log(json["image"]);
         console.log(json["description"]);
+        var obj = {
+          TokenID: tokenIds[index],
+          Image: json["image"],
+          Description: json["description"],
+        };
+        setResp([obj]);
+        console.log([obj]);
+        sethistory(true);
       });
     } catch (e) {
       console.log(e);
@@ -276,8 +292,18 @@ export default function Home() {
             <Text fontSize={{ base: "20px", lg: "20px" }}>AI Mint</Text>
           </Flex>
           <Flex gap={"32px"} display={{ base: "none", lg: "flex" }}>
-            <div className="hover-underline-animation">
-              <Button onClick={test}>History</Button>
+            <div
+              className="hover-underline-animation"
+              ref={btnRef2}
+              onClick={onOpen2}
+            >
+              <Text
+                fontSize={{ base: "11px", lg: "20px" }}
+                cursor={"pointer"}
+                onClick={test}
+              >
+                History
+              </Text>
             </div>
             <div className="hover-underline-animation">
               <Text fontSize={{ base: "11px", lg: "20px" }} cursor={"pointer"}>
@@ -475,9 +501,11 @@ export default function Home() {
               flexDirection={"column"}
               fontFamily={"IBM Plex Mono, monospace"}
             >
-              <Text fontSize="20px" cursor={"pointer"}>
-                Home
-              </Text>
+              <div ref={btnRef2} onClick={onOpen2}>
+                <Text fontSize="20px" cursor={"pointer"} onClick={test}>
+                  History
+                </Text>
+              </div>
 
               <Text fontSize="20px" cursor={"pointer"}>
                 <a
@@ -492,6 +520,57 @@ export default function Home() {
               <Text fontSize="20px" onClick={executeScroll} cursor={"pointer"}>
                 About
               </Text>
+            </Flex>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer
+        isOpen={isOpen2}
+        placement="right"
+        onClose={onClose2}
+        finalFocusRef={btnRef2}
+        size={"xl"}
+        fontFamily={"IBM Plex Mono, monospace"}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton _active={{}} />
+
+          <DrawerBody marginTop={"40px"}>
+            <Flex
+              fontFamily={"IBM Plex Mono, monospace"}
+              justify={"center"}
+              flexWrap={"wrap"}
+              gap={"17px"}
+            >
+              {history ? (
+                <>
+                  {resp.map((item) => {
+                    return (
+                      <div key={item.TokenID}>
+                        <Flex
+                          w={{ base: "300px", lg: "400px" }}
+                          flexDir={"column"}
+                          gap={"7px"}
+                        >
+                          <Image
+                            src={item.Image}
+                            alt={item.TokenID}
+                            rounded={"7px"}
+                          />
+                          <Text fontWeight={"bold"} fontSize={"18px"}>
+                            Token ID : {item.TokenID}
+                          </Text>
+                          <Text fontSize={"14px"}>{item.Description}</Text>
+                        </Flex>
+                      </div>
+                    );
+                  })}
+                </>
+              ) : (
+                <Spinner />
+              )}
             </Flex>
           </DrawerBody>
         </DrawerContent>
