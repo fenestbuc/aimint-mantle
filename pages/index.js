@@ -277,19 +277,7 @@ export default function Home() {
         align={"center"}
         flexDir={"column"}
       >
-        <Flex bg={"black"} color={"white"} width={"100%"} userSelect="none">
-          <Flex paddingTop={"10px"} paddingBottom={"10px"}>
-            <Marquee gradientColor={"[0, 0, 0]"}>
-              <Text>
-                Mantle Testnet Version Mantle Testnet Version Mantle Testnet
-                Version Mantle Testnet Version Mantle Testnet Version Mantle
-                Testnet Version Mantle Testnet Version Mantle Testnet Version
-                Mantle Testnet Version Mantle Testnet Version Mantle Testnet
-                Version Mantle Testnet Version
-              </Text>
-            </Marquee>
-          </Flex>
-        </Flex>
+        
         <Flex gap={{ base: "184px", md: "776px" }} marginTop={"30px"}>
           <Flex gap={"12px"} align={"center"} height={"26px"}>
             <Image src={"aimint_logo.svg"} height={"24px"} width={"24px"} />
