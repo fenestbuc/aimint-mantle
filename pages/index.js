@@ -355,10 +355,6 @@ export default function Home() {
               <u>AI Mint</u> — Bringing generative art to your digital wallets.
             </Text>
 
-            <Text fontSize={"12px"} fontStyle={"italic"}>
-              by <a href={"https://www.ahzam.xyz/"}>ahzam</a> &{" "}
-              <a href={"https://twitter.com/AayushCodes"}>aayush</a> //
-            </Text>
           </Flex>
 
           <Flex flexDir={"column"} marginTop={"21px"} gap={"16px"}>
