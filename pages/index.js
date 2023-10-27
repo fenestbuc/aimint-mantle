@@ -115,7 +115,7 @@ export default function Home() {
     try {
       var data = JSON.stringify({
         chain: "mantle",
-        name: "AI MINT",
+        name: "Ashoka Mint",
         description: { desc }["desc"],
         image: link,
         mint_to_address: { address }["address"],
@@ -281,7 +281,7 @@ export default function Home() {
         <Flex gap={{ base: "184px", md: "776px" }} marginTop={"30px"}>
           <Flex gap={"12px"} align={"center"} height={"26px"}>
             <Image src={"aimint_logo.svg"} height={"24px"} width={"24px"} />
-            <Text fontSize={{ base: "20px", lg: "20px" }}>AI Mint</Text>
+            <Text fontSize={{ base: "20px", lg: "20px" }}>Ashoka Mint</Text>
           </Flex>
           <Flex gap={"32px"} display={{ base: "none", lg: "flex" }}>
             <div
@@ -297,17 +297,7 @@ export default function Home() {
                 History
               </Text>
             </div>
-            <div className="hover-underline-animation">
-              <Text fontSize={{ base: "11px", lg: "20px" }} cursor={"pointer"}>
-                <a
-                  href="https://twitter.com/aimintHQ"
-                  target={"_blank"}
-                  rel="noreferrer"
-                >
-                  Twitter
-                </a>
-              </Text>
-            </div>
+            
             <div className="hover-underline-animation">
               <Text
                 fontSize={{ base: "11px", lg: "20px" }}
@@ -340,7 +330,7 @@ export default function Home() {
             marginTop={"27px"}
           >
             <Text fontSize={{ base: "18px", lg: "26px" }} fontWeight={"500"}>
-              <u>AI Mint</u> — Bringing generative art to your digital wallets.
+              <u>Ashoka Mint</u> — Bringing generative art to your digital wallets.
             </Text>
 
           </Flex>
